@@ -1,4 +1,7 @@
-FROM henasys/uvicorn-gunicorn-fastapi
+FROM python:3.11
+
+COPY ./app/scripts/start-reload.sh /start-reload.sh
+RUN chmod +x /start-reload.sh
 
 WORKDIR /app/
 
@@ -12,7 +15,7 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/
 
 # Allow installing dev dependencies to run tests
-ARG INSTALL_DEV=false
+ARG INSTALL_DEV=true
 RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; else poetry install --no-root --no-dev ; fi"
 
 # For development, Jupyter remote kernel, Hydrogen
@@ -23,3 +26,4 @@ RUN bash -c "if [ $INSTALL_JUPYTER == 'true' ] ; then pip install jupyterlab ; f
 
 COPY ./app /app
 ENV PYTHONPATH=/app
+
